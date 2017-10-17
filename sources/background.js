@@ -1,12 +1,12 @@
 
 var urls = {
-    login: "https://my.yad2.co.il/newOrder/index.php?action=connect",
-    personalArea: "https://my.yad2.co.il/newOrder/index.php?action=personalAreaIndex",
-    bounceOrder: "https://my.yad2.co.il/newOrder/index.php?action=updateBounceListing&"
+    personalArea: "https://my.yad2.co.il/newOrder/index.php?action=personalAreaIndex"
 }
 
 function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
-    console.info("Error while getting personal area. Switching to login form...")
+    console.info("Error while getting personal area. Error:", errorThrown);
+    var opaqueRed = [255, 0, 0, 255];
+    chrome.browserAction.setBadgeBackgroundColor({color: opaqueRed});
 }
 
 function onSuccessfulPersonalArea(data, textStatus, jqXHR) {
@@ -69,7 +69,6 @@ function getBounceEligibleAds() {
 }
 
 $(function() {
-    // 5 minutes
-    var interval = 5 * 60 * 1000;
-    setInterval(getBounceEligibleAds, interval);
+    var fiveMinInterval = 5 * 60 * 1000;
+    setInterval(getBounceEligibleAds, fiveMinInterval);
 });
