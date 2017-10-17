@@ -24,10 +24,10 @@ function loginFailure(data, textStatus, jqXHR) {
 }
 
 function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
-    console.info("Error while getting personal area. Switching to login form...")
+    console.info("Error while getting personal area. Switching to login form...");
 }
 
-function getUrlParam(url, param){
+function getUrlParam(url, param) {
 	var results = new RegExp('[\?&]' + param + '=([^&#]*)').exec(url);
 	return results[1] || 0;
 }
@@ -42,7 +42,7 @@ function createPromoteSuccessFunction(orderNum) {
 function promoteOrdersFromSubCategory(subCategoryUrl) {
     var catId = getUrlParam(subCategoryUrl, "CatID");
     var subCatId = getUrlParam(subCategoryUrl, "SubCatID");
-    console.info("Bouncing orders in category", catId, "Subcategory", subCatId);
+    console.info("Promoting orders in category", catId, "Subcategory", subCatId);
     $.ajax(subCategoryUrl, {
         method: "GET",
         dataType: "html",
@@ -58,7 +58,7 @@ function promoteOrdersFromSubCategory(subCategoryUrl) {
                         data: queryParams,
                         crossDomain: false,
                         success: createPromoteSuccessFunction(orderNum),
-                        error: console.error("Error while bouncing order:", orderNum)
+                        error: console.error("Error while promoting order:", orderNum)
                     });
                 }
             });
