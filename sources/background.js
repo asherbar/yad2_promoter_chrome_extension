@@ -57,7 +57,11 @@ function onSuccessfulPersonalArea(data, textStatus, jqXHR) {
             }
         });
     });
-    chrome.browserAction.setBadgeText({text: numberOfUpdatableAds.toString()});
+    var badgeText = "\u2713";
+    if (numberOfUpdatableAds > 0) {
+        badgeText = numberOfUpdatableAds.toString();
+    }
+    chrome.browserAction.setBadgeText({text: badgeText});
 }
 
 function getBounceEligibleAds() {
@@ -70,6 +74,8 @@ function getBounceEligibleAds() {
 }
 
 $(function() {
-    var fiveMinInterval = 5 * 60 * 1000;
-    setInterval(getBounceEligibleAds, fiveMinInterval);
+    // Run once, then every interval
+    getBounceEligibleAds();
+    var oneHourInterval = 60 * 60 * 1000;
+    setInterval(getBounceEligibleAds, oneHourInterval);
 });

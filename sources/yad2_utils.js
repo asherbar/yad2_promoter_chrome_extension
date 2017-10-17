@@ -11,16 +11,13 @@ var urls = {
     promoteOrder: "https://my.yad2.co.il/newOrder/index.php?action=updateBounceListing&"
 }
 
-var ids = {
-    popupStatus: "#status"
-}
-
 function loginSuccess(jqXHR, textStatus, errorThrown) {
-
+    console.info("Login success");
+    promoteAllAds();
 }
 
 function loginFailure(data, textStatus, jqXHR) {
-
+    console.info("Login failure");
 }
 
 function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
@@ -103,4 +100,3 @@ function promoteAllAds() {
 $(function() {
     promoteAllAds();
 });
-
