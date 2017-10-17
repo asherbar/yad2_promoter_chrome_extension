@@ -4,7 +4,7 @@ var urls = {
 }
 
 function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
-    console.info("Error while getting personal area. Error:", errorThrown);
+    console.error("Error while getting personal area. Error:", errorThrown);
     var opaqueRed = [255, 0, 0, 255];
     chrome.browserAction.setBadgeBackgroundColor({color: opaqueRed});
 }
