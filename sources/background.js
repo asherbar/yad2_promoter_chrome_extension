@@ -13,10 +13,11 @@ function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
 function onSuccessfulPersonalArea(data, textStatus, jqXHR) {
     console.info("Successfully got personal area.")
     // Select all div's with class "content-wrapper active"
-    var numberOfUpdatableAds = 0;
+    var numberOfPromotableAds = 0;
+    var ajaxCalls = [];
     $("div[class='content-wrapper active']", data).each(function(index, element) {
         var subCategoryUrl = $(element).parent().attr("href");
-        $.ajax(subCategoryUrl, {
+        var ajaxCall = $.ajax(subCategoryUrl, {
             method: "GET",
             dataType: "html",
             success: function(data, textStatus, jqXHR) {
@@ -45,7 +46,7 @@ function onSuccessfulPersonalArea(data, textStatus, jqXHR) {
                                 var currentMoment = moment();
                                 var duration = moment.duration(currentMoment.diff(itemMoment));
                                 if (duration.asHours() >= 4) {
-                                    numberOfUpdatableAds += 1;
+                                    numberOfPromotableAds += 1;
                                 }
                             }
                         }
@@ -56,12 +57,17 @@ function onSuccessfulPersonalArea(data, textStatus, jqXHR) {
                 console.error("Unable to get orders from", subCategoryUrl, "Error:", errorThrown);
             }
         });
+        ajaxCalls.push(ajaxCall);
     });
-    var badgeText = "\u2713";
-    if (numberOfUpdatableAds > 0) {
-        badgeText = numberOfUpdatableAds.toString();
-    }
-    chrome.browserAction.setBadgeText({text: badgeText});
+
+    $.when.apply($, ajaxCalls).then(function () {
+        console.info("Done checking all ads. Found", numberOfPromotableAds, "of ads to promote");
+        var badgeText = "\u2713";
+        if (numberOfPromotableAds > 0) {
+            badgeText = numberOfPromotableAds.toString();
+        }
+        chrome.browserAction.setBadgeText({text: badgeText});
+    });
 }
 
 function getBounceEligibleAds() {
