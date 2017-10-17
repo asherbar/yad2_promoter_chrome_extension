@@ -7,6 +7,7 @@ function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
     console.error("Error while getting personal area. Error:", errorThrown);
     var opaqueRed = [255, 0, 0, 255];
     chrome.browserAction.setBadgeBackgroundColor({color: opaqueRed});
+    chrome.browserAction.setBadgeText({text: "!"});
 }
 
 function onSuccessfulPersonalArea(data, textStatus, jqXHR) {
