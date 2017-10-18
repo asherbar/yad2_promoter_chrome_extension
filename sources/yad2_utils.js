@@ -209,7 +209,7 @@ function updateAppearance(state, numberOfPromotableAds) {
 }
 
 function updateBadge() {
-    console.info("Getting all ads...")
+    console.info("Getting all ads...");
     $.ajax(urls.personalArea, {
         method: "GET",
         success: onSuccessfulPersonalAreaForPromotableAds,
