@@ -17,6 +17,6 @@
         "https://*.yad2.co.il/*"
     ],
     "background": {
-        "scripts": ["sources/jquery-3.2.2.min.js", "sources/moment.min.js", "sources/moment-timezone-with-data.min.js", "sources/background.js"]
+        "scripts": ["sources/jquery-3.2.2.min.js", "sources/moment.min.js", "sources/moment-timezone-with-data.min.js", "sources/yad2_utils.js", "sources/background.js"]
     }
 }
