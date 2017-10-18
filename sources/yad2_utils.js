@@ -55,7 +55,9 @@ function promoteOrdersFromSubCategory(subCategoryUrl) {
                         data: queryParams,
                         crossDomain: false,
                         success: createPromoteSuccessFunction(orderNum),
-                        error: console.error("Error while promoting order:", orderNum)
+                        error: function() {
+                            console.error("Error while promoting order:", orderNum);
+                        } 
                     });
                 }
             });
