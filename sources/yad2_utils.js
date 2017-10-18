@@ -11,6 +11,12 @@ var urls = {
     promoteOrder: "https://my.yad2.co.il/newOrder/index.php?action=updateBounceListing&"
 }
 
+var states = {
+    error: "ERROR",
+    upToDate: "UP_TO_DATE",
+    outOfDate: "OUT_OF_DATE"
+}
+
 function loginSuccess(jqXHR, textStatus, errorThrown) {
     console.info("Login success");
     promoteAllAds();
@@ -101,9 +107,7 @@ function promoteAllAds() {
 
 function onErrorPersonalAreaForPromotableAds(jqXHR, textStatus, errorThrown) {
     console.error("Error while getting personal area. Error:", errorThrown);
-    var opaqueRed = [255, 0, 0, 255];
-    chrome.browserAction.setBadgeBackgroundColor({color: opaqueRed});
-    chrome.browserAction.setBadgeText({text: "!"});
+    updateAppearance(states.error);
 }
 
 function onSuccessfulPersonalAreaForPromotableAds(data, textStatus, jqXHR) {
@@ -158,12 +162,50 @@ function onSuccessfulPersonalAreaForPromotableAds(data, textStatus, jqXHR) {
 
     $.when.apply($, ajaxCalls).then(function () {
         console.info("Done checking all ads. Found", numberOfPromotableAds, "of ads to promote");
-        var badgeText = "\u2713";
         if (numberOfPromotableAds > 0) {
-            badgeText = numberOfPromotableAds.toString();
+            updateAppearance(states.outOfDate, numberOfPromotableAds);
         }
-        chrome.browserAction.setBadgeText({text: badgeText});
+        else {
+            updateAppearance(states.upToDate);
+        }
     });
+}
+
+function updateAppearance(state, numberOfPromotableAds) {
+    var badgeText;
+    var tooltipText;
+    var badgeBackgroundColor;
+    var lightGreen = [50, 205, 50, 205];
+    var opaqueRed = [255, 0, 0, 255];
+    switch (state) {
+        case states.error:
+            badgeBackgroundColor = opaqueRed;
+            badgeText = "!";
+            tooltipText = "Click to login";
+            break;
+        case states.outOfDate:
+            if (typeof numberOfPromotableAds === "undefined") {
+                console.error("Expected to get numberOfPromotableAds. Recalling function with", states.error);
+                updateAppearance(states.error);
+                return;
+            }
+            badgeBackgroundColor = lightGreen;
+            badgeText = numberOfPromotableAds.toString();
+            tooltipText = "Click to promote " + numberOfPromotableAds + (numberOfPromotableAds === 1 ? " ad" : " ads");
+            break;
+        case states.upToDate:
+            badgeBackgroundColor = lightGreen;
+            badgeText = "\u2713";
+            tooltipText = "All ads are up to date";
+            break;
+        default:
+            console.error("Recived unexpected state:", state, "Recalling function with", states.error);
+            updateAppearance(state.error);
+            return;
+    }
+    chrome.browserAction.setBadgeBackgroundColor({color: badgeBackgroundColor});
+    chrome.browserAction.setBadgeText({text: badgeText});
+    chrome.browserAction.setTitle({title: tooltipText});
 }
 
 function updateBadge() {
