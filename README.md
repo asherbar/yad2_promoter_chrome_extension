@@ -1,7 +1,7 @@
 # yad2_promoter_chrome_extension
 A Chrome Extension that aims to make promoting [Yad2](http://www.yad2.co.il/) ads easier
 ## Installation
-Visit the [extension page]() and add it to Chrome.
+Visit the [extension page](https://chrome.google.com/webstore/detail/yad2-ad-promoter/agidhggjdnfaaomkedcnljpajkckmaen) and add it to Chrome.
 ## What's this extension for?
 * Notifies you when you can promote ("להקפיץ") an ad
 * Promotes all of your ads in one click
