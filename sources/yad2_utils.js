@@ -1,14 +1,11 @@
-// login to yad2 POST the following:/ > ~/Downloads/wrong_pass.html -v
-// curl 'https://my.yad2.co.il/newOrder/index.php?action=connect' --data 'UserName={{EMAIL}}&password={{PASSWORD}}'
-// login is successfull if the status is 301 ("Moved Permanently"), and unsuccessful if status is 200
 
 // To promote POST the following:
 // https://my.yad2.co.il/newOrder/index.php?action=updateBounceListing&CatID={{CATEGORY}}&SubCatID={{SUBCATEGORY}}&OrderID={{ORDER_ID}}
 
 var urls = {
-    login: "https://my.yad2.co.il/newOrder/index.php?action=connect",
     personalArea: "https://my.yad2.co.il/newOrder/index.php?action=personalAreaIndex",
-    promoteOrder: "https://my.yad2.co.il/newOrder/index.php?action=updateBounceListing&"
+    promoteOrder: "https://my.yad2.co.il/newOrder/index.php?action=updateBounceListing&",
+    login: "https://my.yad2.co.il/login.php"
 }
 
 var states = {
@@ -17,17 +14,9 @@ var states = {
     outOfDate: "OUT_OF_DATE"
 }
 
-function loginSuccess(jqXHR, textStatus, errorThrown) {
-    console.info("Login success");
-    promoteAllAds();
-}
-
-function loginFailure(data, textStatus, jqXHR) {
-    console.info("Login failure");
-}
-
-function onErrorPersonalAreaForPromotingAds(jqXHR, textStatus, errorThrown) {
-    console.info("Error while getting personal area. Switching to login form...");
+function onErrorPersonalArea(jqXHR, textStatus, errorThrown) {
+    console.error("Error while getting personal area. Error:", errorThrown, "Switching to login request...");
+    updateAppearance(states.error);
 }
 
 function getUrlParam(url, param) {
@@ -75,42 +64,36 @@ function promoteOrdersFromSubCategory(subCategoryUrl) {
 }
 
 function onSuccessfulPersonalAreaForPromotingAds(data, textStatus, jqXHR) {
-    console.info("Successfully got personal area.")
-    // Select all div's with class "content-wrapper active"
-    $("div[class='content-wrapper active']", data).each(function(index, element) {
-        promoteOrdersFromSubCategory($(element).parent().attr("href"));
-    });
-}
-
-function login(userName, password) {
-    $.ajax(urls.login, {
-        method: "POST",
-        data: {UserName: userName, password: password},
-        crossDomain: true,
-        statusCode: {
-            // 200 is actually returned on wrong credentials
-            200: loginFailure,
-            // 301 (redirection) is actually returned on correct credentials
-            301: loginSuccess
-        }
-     });
+    var numberOfPersonalInformationClasses = $("div[class='personalInformation']", data).length;
+    if (numberOfPersonalInformationClasses > 0) {
+        console.info("Successfully got personal area.");
+        // Select all div's with class "content-wrapper active"
+        $("div[class='content-wrapper active']", data).each(function(index, element) {
+            promoteOrdersFromSubCategory($(element).parent().attr("href"));
+        });
+    }
+    else {
+        console.info("It seems login is required");
+        onErrorPersonalArea({errorThrown: "Login Required"});
+    }
 }
 
 function promoteAllAds() {
     console.info("Trying to promote all ads...")
-    $.ajax(urls.personalArea, {
+    return $.ajax(urls.personalArea, {
         method: "GET",
         success: onSuccessfulPersonalAreaForPromotingAds,
-        error: onErrorPersonalAreaForPromotingAds
+        error: onErrorPersonalArea
     });
 }
 
-function onErrorPersonalAreaForPromotableAds(jqXHR, textStatus, errorThrown) {
-    console.error("Error while getting personal area. Error:", errorThrown);
-    updateAppearance(states.error);
-}
-
 function onSuccessfulPersonalAreaForPromotableAds(data, textStatus, jqXHR) {
+    var numberOfPersonalInformationClasses = $("div[class='personalInformation']", data).length;
+    if (numberOfPersonalInformationClasses === 0) {
+        console.info("It seems login is required");
+        onErrorPersonalArea({errorThrown: "Login Required"});
+        return;
+    }
     console.info("Successfully got personal area.")
     // Select all div's with class "content-wrapper active"
     var numberOfPromotableAds = 0;
@@ -179,6 +162,8 @@ function updateAppearance(state, numberOfPromotableAds) {
     var opaqueRed = [255, 0, 0, 255];
     switch (state) {
         case states.error:
+            $("#status").hide();
+            $("#loginMessage").show();
             badgeBackgroundColor = opaqueRed;
             badgeText = "!";
             tooltipText = "Click to login";
@@ -194,6 +179,7 @@ function updateAppearance(state, numberOfPromotableAds) {
             tooltipText = "Click to promote " + numberOfPromotableAds + (numberOfPromotableAds === 1 ? " ad" : " ads");
             break;
         case states.upToDate:
+            $("#status").text("Done!");
             badgeBackgroundColor = lightGreen;
             badgeText = "\u2713";
             tooltipText = "All ads are up to date";
@@ -213,6 +199,6 @@ function updateBadge() {
     $.ajax(urls.personalArea, {
         method: "GET",
         success: onSuccessfulPersonalAreaForPromotableAds,
-        error: onErrorPersonalAreaForPromotableAds
+        error: onErrorPersonalArea
     });
 }
