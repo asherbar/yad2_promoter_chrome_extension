@@ -108,15 +108,19 @@ function onSuccessfulPersonalAreaForPromotableAds(data, textStatus, jqXHR) {
                 $("tr", ordersTable).each(function(index, element) {
                     if ($(element).hasClass("item")) {
                         var tableRowLength = ('td', element).length;
-                        if (tableRowLength < 7) {
-                            console.error("Expected at least 7 columns in row. Instead have:", tableRowLength);
+                        if (tableRowLength < 8) {
+                            console.error("Expected at least 8 columns in row. Instead have:", tableRowLength);
                         }
                         else {
                             var itemDate = $("td:nth-child(7)", element).text();
                             var itemTime = $("td:nth-child(6)", element).text();
+                            var adStatus = $("td:nth-child(8)", element).text();
                             var dateParts = itemDate.split('/');
                             var timeParts = itemTime.split(':');
-                            if (dateParts.length !== 3) {
+                            if (adStatus !== "מודעה פעילה") {
+                                console.info("Ad seems to be inactive. Got ad status", adStatus);
+                            }
+                            else if (dateParts.length !== 3) {
                                 console.error("Error while trying to parse date:", itemDate);
                             }
                             else if (timeParts.length !== 2) {

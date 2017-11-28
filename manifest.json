@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Yad2 Ad Promoter",
-    "version": "0.1",
+    "version": "0.1.2",
     "description": "Promoting your Yad2 posts easily",
     "icons": {
         "128": "icons/icon128.png",
