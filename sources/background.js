@@ -2,6 +2,6 @@
 $(function() {
     // Run once, then every interval
     updateBadge();
-    var oneHourInterval = 60 * 60 * 1000;
-    setInterval(updateBadge, oneHourInterval);
+    var fiveMinutesInterval = 5 * 60 * 1000;
+    setInterval(updateBadge, fiveMinutesInterval);
 });
